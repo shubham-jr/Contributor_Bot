@@ -1,0 +1,5 @@
+node_modules/
+.todo
+app2.log
+plop_templates/
+.env
