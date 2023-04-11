@@ -3,3 +3,4 @@ node_modules/
 app2.log
 plop_templates/
 .env
+plopfile.js
