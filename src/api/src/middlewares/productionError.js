@@ -4,7 +4,7 @@ const productionError = (err) => {
   let statusCode, message;
   if (err.message.match(/duplicate key error/)) {
     statusCode = httpStatus.CREATED;
-    message = "You are already regestered";
+    message = "You are already registered";
   } else {
     statusCode = httpStatus.CREATED;
     message = "Something went wrong :(";

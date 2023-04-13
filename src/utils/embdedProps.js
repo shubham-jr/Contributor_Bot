@@ -1,8 +1,13 @@
-const { createEmbeddedMessage } = require("./../utils/embded");
+const {
+  createEmbeddedMessage,
+  singleMessageEmbedded,
+} = require("./../utils/embded");
 
 module.exports = ({ title, description }) => {
   let props = {};
   props.title = title;
   props.description = description;
-  return createEmbeddedMessage(props);
+  return description && description !== ""
+    ? createEmbeddedMessage(props)
+    : singleMessageEmbedded(props);
 };

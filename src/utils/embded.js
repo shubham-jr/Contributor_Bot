@@ -29,5 +29,22 @@ const createEmbeddedError = (error) => {
   return exampleEmbed;
 };
 
+const singleMessageEmbedded = (props) => {
+  const exampleEmbed = new EmbedBuilder()
+    .setColor(`#FF0000`)
+    .setTitle(`${props.title}`);
+  // .setDescription(`${props.description}`);
+  // .addFields({
+  //   name: `neymar`,
+  //   value: `jr`,
+  //   inline: true,
+  // });
+  return exampleEmbed;
+};
+
 // send the embed to a channel
-module.exports = { createEmbeddedMessage, createEmbeddedError };
+module.exports = {
+  createEmbeddedMessage,
+  createEmbeddedError,
+  singleMessageEmbedded,
+};

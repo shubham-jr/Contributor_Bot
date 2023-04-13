@@ -4,7 +4,13 @@ const isValid = require("./../utils/isValid");
 module.exports = {
   name: "messageCreate",
   execute(message, client) {
-    if (!isValid.botChannelId(message.channel.id)) return;
+    // command coming from bot_channel or from forum thread
+    if (
+      !isValid.botChannelId(message.channel.id) &&
+      !(message.channel.parent && message.channel.parent.type)
+    )
+      return;
+    console.log("chala");
 
     if (message.content.startsWith(config.prefix)) {
       const args = message.content

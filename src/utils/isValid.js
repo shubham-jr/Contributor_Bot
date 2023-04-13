@@ -31,8 +31,11 @@ const emoji = (emojiName) => {
 };
 
 const roles = (message, validRoles) => {
-  const roles = message.member.roles.cache.map((role) => role.name);
-  return validRoles.every((role) => roles.includes(role));
+  const roles = message.member.roles.cache.map((role) =>
+    role.name.toLowerCase()
+  );
+  console.log(roles, validRoles);
+  return validRoles.every((role) => roles.includes(role.toLowerCase()));
 };
 
 const botChannelId = (id) => {

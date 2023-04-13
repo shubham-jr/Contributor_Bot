@@ -1,6 +1,6 @@
-const config = require("./../utils/config");
+const config = require("../utils/config");
 const isValid = require("../utils/isValid");
-const { updateContribution } = require("./../utils/apiControllers");
+const { updateContribution } = require("../utils/apiControllers");
 
 async function getThreadDetails(thread) {
   const threadMessages = await thread.messages.fetch({
@@ -39,18 +39,18 @@ async function getOPOfReactedMessageDetails(thread, reaction) {
 }
 
 function getEmojiDetails(reaction) {
-  const value = reaction.emoji.name === "__positive" ? 1 : -1;
+  const value = reaction.emoji.name === "__positive" ? -1 : -(-1);
   return { name: reaction.emoji.name, value };
 }
 
 function event() {
-  return "messageReactionAdd";
+  return "messageReactionRemove";
 }
 
 async function getMessageReactionInfo({ thread, user, reaction }) {
   let messageReactionInfo = {};
 
-  messageReactionInfo.event = event("");
+  messageReactionInfo.event = event();
   messageReactionInfo.forum = getForumDetails(thread);
   messageReactionInfo.reactedUser = getReactedUserDetails(user);
   messageReactionInfo.emoji = getEmojiDetails(reaction);
@@ -64,7 +64,7 @@ async function getMessageReactionInfo({ thread, user, reaction }) {
 }
 
 module.exports = {
-  name: "messageReactionAdd",
+  name: "messageReactionRemove",
   async execute(reaction, user, client) {
     const thread = await client.channels.fetch(reaction.message.channel.id);
     const message = await thread.messages.fetch(reaction.message.id);
@@ -87,7 +87,6 @@ module.exports = {
     });
 
     console.log(messageReactionInfo);
-
     await updateContribution(messageReactionInfo);
   },
 };

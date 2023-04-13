@@ -1,10 +1,10 @@
 const { createEmbeddedError } = require("./../utils/embded");
 
 const errorHandler = (error) => {
-  console.log("bhola", error);
   const message = error.dcMsgObj;
+  console.log(error.type);
 
-  if (error.type === "discordError") {
+  if (error.type === "discordError" || error.type === "DiscordError") {
     // Handle DiscordError instance
     message.reply({ embeds: [createEmbeddedError(error.message)] });
   } else {

@@ -8,7 +8,7 @@ const {
   getContribution,
 } = require("./../utils/apiControllers");
 
-const getAllVolunteer = async (volunteerLists, message) => {
+const getAllVolunteer = catchAsync(async (volunteerLists, message) => {
   // for (let i = 0; i < volunteerLists.length; i++) {
   //   let singleVolunteer = {};
   //   const { username } = await message.client.users.fetch(
@@ -29,12 +29,12 @@ const getAllVolunteer = async (volunteerLists, message) => {
     }))
   );
   return allVolunteer;
-};
+});
 
 const getSubDescription = (allVolunteer) => {
   let subDescription = "";
-  allVolunteer.forEach(({ username, contribution }) => {
-    subDescription += `${bold(username)}  ${seperator()} ${bold(
+  allVolunteer.forEach(({ username, contribution }, id) => {
+    subDescription += `${id + 1} .  ${bold(username)}  ${seperator()} ${bold(
       contribution
     )} ${newLine()}`;
   });
@@ -42,12 +42,12 @@ const getSubDescription = (allVolunteer) => {
 };
 
 const allContribution = catchAsync(async (message) => {
-  const volunteerLists = await getAllContribution();
+  const response = await getAllContribution();
+  console.log("respone", response);
 
-  if (volunteerLists === "No one here")
-    throw new DiscordError("No one here", message);
+  if (response.error) throw new DiscordError(response.error, message);
 
-  const allVolunteer = await getAllVolunteer(volunteerLists, message);
+  const allVolunteer = await getAllVolunteer(response.volunteerLists, message);
 
   const props = embdedProps({
     title: "List of Contributors",
@@ -57,20 +57,111 @@ const allContribution = catchAsync(async (message) => {
   return props;
 });
 
-async function myContribution(message) {
-  const contribution = await getContribution(message.author.id);
+const myContribution = catchAsync(async (message) => {
+  const response = await getContribution(message.author.id);
+  console.log(response);
 
-  if (contribution === "not_registered")
-    throw new DiscordError("You are not registered", message);
+  if (response.error) throw new DiscordError(response.error, message);
 
   const username = message.author.username;
+  const { contribution } = response.volunteer;
 
   const props = embdedProps({
     title: `${username}'s Contribution`,
     description: `Your Contribution points are ${bold(contribution)}`,
   });
   return props;
-}
+});
+
+const plotContribution = catchAsync(async (message) => {
+  const { ChartJSNodeCanvas } = require("chartjs-node-canvas");
+
+  const response = await getContribution(message.author.id);
+  if (response.error) throw new DiscordError(response.error, message);
+
+  const { contributionHistory } = response.volunteer;
+  console.log(response);
+  // do above in one line
+
+  // Extract the contribution and date data from the contribution history
+  const contributions = [];
+  const dates = [];
+  console.log(contributionHistory);
+  for (const { contribution, year, month } of contributionHistory) {
+    contributions.push(contribution);
+    dates.push(`${year}-${month.toString().padStart(2, "0")}`);
+  }
+
+  console.log(dates, contributions);
+
+  // Define the contribution data
+  const contributionData = {
+    labels: dates,
+    datasets: [
+      {
+        label: "Contribution",
+        data: contributions,
+        backgroundColor: "#36A2EB",
+        borderColor: "#36A2EB",
+        borderWidth: 5,
+      },
+    ],
+  };
+
+  // Define the chart configuration
+  const chartConfig = {
+    type: "line",
+    data: contributionData,
+    options: {
+      scales: {
+        x: {
+          gridLines: {
+            color: "#36A2EB", // set color of x-axis grid lines
+          },
+          ticks: {
+            color: "white", // change x-axis tick color to red
+            font: {
+              size: 16, // increase x-axis tick font size
+              weight: "bold", // make x-axis tick font bold
+            },
+          },
+        },
+        y: {
+          ticks: {
+            color: "white", // change y-axis tick color to blue
+            font: {
+              size: 16, // increase y-axis tick font size
+              weight: "bold", // make y-axis tick font bold
+            },
+          },
+        },
+      },
+      legend: {
+        labels: {
+          fontSize: 16,
+          fontWeight: "bold",
+        },
+      },
+    },
+  };
+
+  // Create the chart using Chart.js
+  const chartJSNodeCanvas = new ChartJSNodeCanvas({ width: 500, height: 400 });
+  const image = await chartJSNodeCanvas.renderToBuffer(
+    chartConfig,
+    "image/png"
+  );
+
+  // Send the chart image to Discord
+  message.reply({
+    files: [
+      {
+        attachment: image,
+        name: "chart.png",
+      },
+    ],
+  });
+});
 
 module.exports = {
   name: "contribution",
@@ -81,6 +172,7 @@ module.exports = {
     let reply;
     if (subCommand == "my") reply = await myContribution(message);
     if (subCommand == "all") reply = await allContribution(message);
+    if (subCommand == "plot") await plotContribution(message);
     if (reply) message.reply({ embeds: [reply] });
   },
 };

@@ -2,20 +2,28 @@ const { ObjectId } = require("mongoose").Types;
 require("express-async-errors");
 const volunteerModel = require("./../models/volunteer.model");
 
-const createVolunteer = async ({ discordId, history, contribution }) => {
+const createVolunteer = async ({
+  discordId,
+  history,
+  contribution,
+  contributionHistory,
+}) => {
+  console.log(discordId, history, contribution, contributionHistory);
   const createdVolunteer = await volunteerModel.create({
     discordId,
     history,
     contribution,
+    contributionHistory,
   });
-
-  console.log(createVolunteer);
 
   return createdVolunteer;
 };
 
 const getAllVolunteer = async () => {
-  const getAllVolunteer = await volunteerModel.find();
+  // const getAllVolunteer = await volunteerModel.find();
+  const getAllVolunteer = await volunteerModel
+    .find()
+    .sort({ contribution: -1 });
 
   return getAllVolunteer;
 };
@@ -45,11 +53,30 @@ const deleteAllVolunteer = async () => {
   await volunteerModel.deleteMany({});
 };
 
+// const resetContribution = async () => {
+//   const updatedVolunteers = await volunteerModel.updateMany({
+//     contribution: 0,
+//   });
+//   return updatedVolunteers;
+// };
+
 const resetContribution = async () => {
-  console.log("yes");
-  const updatedVolunteers = await volunteerModel.updateMany({
-    contribution: 0,
-  });
+  const currentYear = new Date().getFullYear();
+  const currentMonth = new Date().getMonth() + 1;
+  const updatedVolunteers = await volunteerModel.find();
+  for (const volunteer of updatedVolunteers) {
+    const { contribution } = volunteer;
+
+    const updateContributionHistory = {
+      contribution,
+      year: currentYear,
+      month: currentMonth,
+    };
+    console.log(volunteer);
+    volunteer.contribution = 0;
+    volunteer.contributionHistory.push(updateContributionHistory);
+    await volunteer.save({ runValidators: false });
+  }
   return updatedVolunteers;
 };
 

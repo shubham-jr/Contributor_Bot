@@ -16,6 +16,17 @@ const volunteerSchema = mongoose.Schema(
       type: Number,
       default: 0,
     },
+    contributionHistory: {
+      type: [
+        {
+          contribution: Number,
+          year: Number,
+          month: Number,
+        },
+      ],
+      default: [],
+      _id: false,
+    },
   },
   {
     timestamps: true,

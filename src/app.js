@@ -19,6 +19,10 @@ app.use(
   })
 );
 
+// convert error to ApiError, if needed
+// app.use(errorConverter);
+
+// handle error
 app.use(errorHandler);
 
 module.exports = app;

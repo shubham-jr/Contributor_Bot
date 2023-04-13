@@ -34,7 +34,7 @@ class Discord extends Client {
 
     for (const file of commandFiles) {
       const command = require(`./../commands/${file}`);
-      this.commands.set(command.name, command);
+      this.commands.set(command.name, { ...command, client: this });
     }
   }
 

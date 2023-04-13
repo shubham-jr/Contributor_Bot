@@ -1,6 +1,7 @@
 const app = require("./app");
 const config = require("./utils/config");
 const logger = require("./utils/logger");
+// const { errorHandler } = require("./middlewares/error");
 
 let server;
 
@@ -20,6 +21,7 @@ const exitHandler = () => {
 
 const unexpectedErrorHandler = (error) => {
   logger.error(error);
+  // errorHandler(error);
   exitHandler();
 };
 

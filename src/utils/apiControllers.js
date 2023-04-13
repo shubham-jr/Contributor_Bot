@@ -1,4 +1,4 @@
-const url = "http://127.0.0.1:4444/api/v1/volunteer";
+const url = "http://127.0.0.1:4000/api/v1/volunteer";
 const axios = require("axios");
 
 const loginController = async (discordId) => {
@@ -20,9 +20,10 @@ const updateContribution = async (messageReactionInfo) => {
 
 const getContribution = async (discordId) => {
   const { data } = await axios.get(`${url}/${discordId}`);
-  return data && data.getVolunteer && data.getVolunteer
-    ? data.getVolunteer.contribution
-    : "not_registered";
+  let response = { error: false };
+  return data && data.getVolunteer
+    ? ((response.volunteer = data.getVolunteer), response)
+    : ((response.error = "not_registered"), response);
 };
 
 const getAllContribution = async () => {
@@ -36,7 +37,16 @@ const getAllContribution = async () => {
       contribution: volunteer.contribution,
     });
   });
-  return volunteerLists;
+  console.log(volunteerLists.length);
+  let response = { error: false };
+  return volunteerLists.lenght == 0
+    ? ((response.error = "no one here"), response)
+    : ((response.volunteerLists = volunteerLists), response);
+};
+
+const resetContribution = async () => {
+  const { data } = await axios.patch(`${url}/reset`);
+  return data.message;
 };
 
 module.exports = {
@@ -44,4 +54,5 @@ module.exports = {
   updateContribution,
   getContribution,
   getAllContribution,
+  resetContribution,
 };

@@ -8,14 +8,15 @@ const volunteerValidation = require("../validations/volunteer.validation");
 const volunteerService = require("../services/volunteer.service");
 
 const createVolunteer = async (req, res, next) => {
-  validateSchema(req, volunteerValidation.createVolunteer);
+  // validateSchema(req, volunteerValidation.createVolunteer);
 
-  const { discordId, history, contribution } = req.body;
+  const { discordId, history, contribution, contributionHistory } = req.body;
 
   const createdVolunteer = await volunteerService.createVolunteer({
     discordId,
     history,
     contribution,
+    contributionHistory,
   });
 
   res.status(httpStatus.CREATED).send({
@@ -68,9 +69,10 @@ const deleteAllVolunteer = async (req, res, next) => {
 };
 
 const resetContribution = async (req, res, next) => {
-  console.log("wdjcbejbcbcj");
   const resettedVolunteers = await volunteerService.resetContribution();
-  res.status(httpStatus.CREATED).send({ resettedVolunteers });
+  res
+    .status(httpStatus.CREATED)
+    .send({ resettedVolunteers, message: "Reset Success" });
 };
 
 module.exports = {
