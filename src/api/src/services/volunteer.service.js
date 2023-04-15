@@ -2,6 +2,29 @@ const { ObjectId } = require("mongoose").Types;
 require("express-async-errors");
 const volunteerModel = require("./../models/volunteer.model");
 
+const today = () => {
+  const now = new Date();
+  const year = now.getFullYear();
+  let month = now.getMonth() + 1;
+  return { month, year };
+};
+
+const updateContributionHistory = (oldVolunteer) => {
+  const { year, month } = today();
+  console.log(year, month);
+  let tmp = -1;
+
+  for (const [index, ctbHist] of oldVolunteer.contributionHistory.entries()) {
+    console.log(ctbHist);
+    if (ctbHist.month == month && ctbHist.year == year) {
+      tmp = index;
+      break;
+    }
+  }
+
+  return tmp;
+};
+
 const createVolunteer = async ({
   discordId,
   history,
@@ -35,13 +58,26 @@ const getVolunteer = async ({ discordId }) => {
 };
 
 const updateVolunteer = async ({ discordId, body }) => {
-  console.log("discoedId", discordId, typeof discordId);
-  const oldVolunteer = await volunteerModel.findOne({ discordId });
-  console.log("old", oldVolunteer);
+  let oldVolunteer = await volunteerModel.findOne({ discordId });
+
+  if (!oldVolunteer) return { status: "failed", message: "user not found" };
+
   oldVolunteer.history.push(body.history[0]);
   oldVolunteer.contribution += body.contribution;
+  const index = updateContributionHistory(oldVolunteer);
+
+  const { month, year } = today();
+  if (index >= 0)
+    oldVolunteer.contributionHistory[index].contribution += body.contribution;
+  else
+    oldVolunteer.contributionHistory.push({
+      contribution: body.contribution,
+      month,
+      year,
+    });
+
   const updatedVolunteer = await oldVolunteer.save();
-  console.log(updateVolunteer);
+
   return updatedVolunteer;
 };
 

@@ -27,9 +27,9 @@ const getContribution = async (discordId) => {
 };
 
 const getAllContribution = async () => {
+  let response = { error: false };
   let volunteerLists = [];
   const { data } = await axios.get(`${url}`);
-  if (!data.getAllVolunteer.length) return "No one here"; // include error obj such that we can find that it's error
 
   data.getAllVolunteer.forEach((volunteer) => {
     volunteerLists.push({
@@ -37,9 +37,8 @@ const getAllContribution = async () => {
       contribution: volunteer.contribution,
     });
   });
-  console.log(volunteerLists.length);
-  let response = { error: false };
-  return volunteerLists.lenght == 0
+
+  return !data.getAllVolunteer.lenght
     ? ((response.error = "no one here"), response)
     : ((response.volunteerLists = volunteerLists), response);
 };

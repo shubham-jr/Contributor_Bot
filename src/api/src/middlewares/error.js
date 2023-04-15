@@ -23,6 +23,7 @@ const errorConverter = (err, req, res, next) => {
 
 const errorHandler = (err, req, res, next) => {
   let { statusCode, message } = err;
+  console.log(err);
   console.log("in error.js", config.node_env);
   if (config.node_env === "production") {
     statusCode = productionError(err).statusCode;

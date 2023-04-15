@@ -43,7 +43,7 @@ const getSubDescription = (allVolunteer) => {
 
 const allContribution = catchAsync(async (message) => {
   const response = await getAllContribution();
-  console.log("respone", response);
+  console.log("respone", response.error);
 
   if (response.error) throw new DiscordError(response.error, message);
 
