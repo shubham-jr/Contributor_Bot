@@ -9,16 +9,6 @@ const {
 } = require("./../utils/apiControllers");
 
 const getAllVolunteer = catchAsync(async (volunteerLists, message) => {
-  // for (let i = 0; i < volunteerLists.length; i++) {
-  //   let singleVolunteer = {};
-  //   const { username } = await message.client.users.fetch(
-  //     volunteerLists[i].discordId
-  //   );
-  //   singleVolunteer.username = username;
-  //   singleVolunteer.contribution = volunteerLists[i].contribution;
-  //   allVolunteer.push(singleVolunteer);
-  // }
-
   // one liner code for upper one
   const allVolunteer = await Promise.all(
     volunteerLists.map(async (volunteer) => ({
@@ -68,7 +58,9 @@ const myContribution = catchAsync(async (message) => {
 
   const props = embdedProps({
     title: `${username}'s Contribution`,
-    description: `Your Contribution points are ${bold(contribution)}`,
+    description: `Your Contribution points of this month = ${bold(
+      contribution
+    )}`,
   });
   return props;
 });
