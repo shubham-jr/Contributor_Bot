@@ -1,6 +1,6 @@
 const config = require("./../utils/config");
 const isValid = require("./../utils/isValid");
-const { isThreadChannel } = require("./../utils/discordHelper");
+const { isThreadChannel, isBot } = require("./../utils/discordHelper");
 const customEmojiId = require("./../utils/emojiIds");
 
 function reactOnMessage(message) {
@@ -26,7 +26,8 @@ module.exports = {
       return;
 
     const isValidPrefix = message.content.startsWith(config.prefix);
-    if (isThreadChannel(message) && !isValidPrefix) reactOnMessage(message);
+    if (isThreadChannel(message) && !isValidPrefix && !isBot(message))
+      reactOnMessage(message);
 
     if (isValidPrefix) {
       const args = message.content

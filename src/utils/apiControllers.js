@@ -38,7 +38,7 @@ const getAllContribution = async () => {
     });
   });
 
-  return !data.getAllVolunteer.lenght
+  return !data.getAllVolunteer.length
     ? ((response.error = "no one here"), response)
     : ((response.volunteerLists = volunteerLists), response);
 };

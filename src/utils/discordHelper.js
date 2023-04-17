@@ -1,5 +1,9 @@
 const isThreadChannel = (message) => {
-  return message.channel.parent && message.channel.parent.type;
+  return message.channel.parent && message.channel.parent.type === 15;
 };
 
-module.exports = { isThreadChannel };
+const isBot = (message) => {
+  return message.author.bot;
+};
+
+module.exports = { isThreadChannel, isBot };
